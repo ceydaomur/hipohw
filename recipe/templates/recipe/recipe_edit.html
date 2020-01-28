@@ -1,0 +1,8 @@
+{% extends 'recipe/base.html' %}
+
+{% block content %}
+    <form method="POST" class="recipe-form">{% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="save btn btn-default">Share</button>
+    </form>
+{% endblock %}

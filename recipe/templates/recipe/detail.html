@@ -1,0 +1,66 @@
+<div align="center">
+    <h1>Recipe Detail</h1>
+</div>
+
+<div style="background-color:yellow; border-color:yellow; color:purple">
+    <h3>
+    <a href="{% url 'recipe_list' %}"><left>Recipe.com<left></a>  <a href="{% url 'recipe_new' %}"> Share a Recipe </a>
+    {% if user.is_authenticated == False %}
+        <a href="{% url 'login' %}" class="top-menu" style= "float: right;">Log in</a>
+    {%else%}
+        <a href="{% url 'logout' %}" class="top-menu" style= "float: right;">({{user}}) Log out</a>
+    {% endif %}
+    <a href="{% url 'signup' %}" class="top-menu" style= "float: right;"> Sign up</a>
+
+    </h3>
+</div>
+
+<div>
+    <h2>{{ detail.recipe_name }}</h2>
+    <p> 🔪{{detail.author}}💪{{ detail.difficulty}} ⏰{{detail.creation_time}}</p>
+    <p>
+    {%if detail.image%}
+        <img src='{{ detail.image.url }}'width="200" height="200" >
+    {%endif%}
+    </p>
+
+
+<div class="like-content">
+    {% if is_liked == False and user.is_authenticated %}
+        <form action='like/'>
+        <input type="submit" value="Like ({{detail.total_likes}})" style="background-color:green; border-color:black; color:white">
+        </form>
+    {%else%}
+        <input type="submit" value="Like ({{detail.total_likes}})" style="background-color:blue; border-color:black; color:white">
+        </form>
+    {%endif%}
+</div>
+
+<div>
+    <h3>Ingredients </h3>
+    {% for ingredient_list in ingredient_list %}
+        <p> ● {{ ingredient_list.name}}</p>
+    {% endfor %}
+    <h3>Description </h3>
+    <p>{{ detail.description}}</p>
+</div>
+
+<div class="vote-content">
+    {% if is_voted == False and user.is_authenticated %}
+        <form action="vote/" method="post">
+        {% csrf_token %}
+        <select name="recipe">
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+        </select>
+        <input type="submit" value="Rate" />
+        </form>
+    {%else%}
+        <p style="color:red"> You chosed {{choice}} </p>
+    {%endif%}
+</div>
+<p>{{is_liked}} {{is_voted}} {{user.is_authenticated}} </p>

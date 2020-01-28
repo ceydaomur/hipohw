@@ -1,0 +1,55 @@
+<div align="center">
+    <h1>Homepage</h1>
+</div>
+
+<div style="background-color:yellow; border-color:yellow; color:purple">
+    <h3>
+    <a href="{% url 'recipe_list' %}"><left>Recipe.com<left></a> &nbsp;&nbsp;&nbsp;&nbsp; <a href="{% url 'recipe_new' %}"> Share a Recipe </a>
+    {% if user.is_authenticated == False %}
+      <a href="{% url 'login' %}" class="top-menu" style= "float: right;" >Log in</a>
+    {%else%}
+        <a href="{% url 'logout' %}" class="top-menu" style= "float: right;">  ({{user}}) Log out</a>
+    {% endif %}
+    <a href="{% url 'signup' %}" class="top-menu" style= "float: right;" > Sign up </a>
+    </h3>
+</div>
+{% for recipe in list %}
+    <div>
+        <h2><a href="{% url 'detail' pk=recipe.pk %}">{{ recipe.recipe_name }}</a></h2>
+        {%if recipe.image%}
+            <img src='{{ recipe.image.url}}'width="200" height="200" >
+        {%endif%}
+    </div>
+    <div style="width: 700px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ recipe.description}}</div>
+    <div>
+        <p> {{ recipe.creation_time}} ·
+        {{recipe.average}}/5 ({{recipe.total_votes}} Votes) ·
+        {% if recipe.total_likes == 0 %}
+            No like ·
+        {% elif recipe.total_likes == 1 %}
+            {{recipe.total_likes}} like ·
+        {% else %}
+            {{recipe.total_likes}} likes ·
+        {% endif %}
+        by {{recipe.author}}  </p>
+    </div>
+{% endfor %}
+
+
+<div class="pagination" align = "center">
+    <span class="step-links">
+        {% if list.has_previous %}
+            <a href="?page={{ list.previous_page_number }}"><input type="submit" value="Previous Page" /></a>
+        {% endif %}
+        {% if list.has_next %}
+            <a href="?page={{ list.next_page_number }}"><input type="submit" value="Next Page" /></a>
+        {% endif %}
+    </span>
+    {%if recipes.count == 1 %}
+        <p>Total {{recipes.count}} recipe</p>
+    {%elif recipes.count == 0 %}
+        <p> No recipe</p>
+    {%else%}
+        <p>Total {{recipes.count}} recipes</p>
+    {% endif %}
+</div>

@@ -1,0 +1,34 @@
+Putting logout action in a <a> tag - Stack Overflow
+
+[('0','0'),('1','1'),('2','2'),('3','3'),('4','4'),('5','5')]
+
+<form action="vote/" method="post">
+    {% csrf_token %}
+    {% for choice in choice_set %}
+        <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
+        <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br>
+    {% endfor %}
+    <input type="submit" value="Rate">
+</form>
+
+{{recipe.average}}/5 ({{recipe.total_votes}} Votes) ·
+
+    def average(self):
+        sum = self.objects.all().aggregate(Sum('votes'))
+        avg = sum/self.votes.count()
+        return avg
+
+<div class="pagination">
+    <span class="step-links">
+        {% if list.has_previous %}
+            <a href="?page={{ list.previous_page_number }}">previous</a>
+        {% endif %}
+        <span class="current">
+            Page {{ list.number }} of {{ list.paginator.num_pages }}.
+        </span>
+
+        {% if list.has_next %}
+            <a href="?page={{ list.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div>

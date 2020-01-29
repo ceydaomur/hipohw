@@ -11,8 +11,6 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
-
-
 def signup_view(request):
     form = UserCreationForm(request.POST)
     if form.is_valid():
@@ -26,36 +24,37 @@ def signup_view(request):
 
 def vote_recipe(request, pk):
     detail = get_object_or_404(Recipe, pk=pk)
+    #is_voted = False
     choice = request.POST.get('recipe')
-    ch = Vote.objects.create(recipe=detail, user=request.user, rating=choice)
-    ingredient_list = Ingredient.objects.filter(recipe__id=pk)
-    return render(request, 'recipe/detail.html', {'detail':detail,  'ingredient_list': ingredient_list, 'choice':choice} )
-
+    Vote.objects.create(recipe=detail, user=request.user, rating=choice)
+    '''if detail.votes.filter(pk=request.user.id).exists():
+        is_voted = True
+    if is_voted == True:
+        print("You chosed", choice )'''
+    return redirect('detail', pk=pk)
 
 def like_recipe(request, pk):
     detail = get_object_or_404(Recipe, pk=pk)
-    detail.likes.add(request.user)
-    detail.save()
-    is_voted=False
-    ingredient_list = Ingredient.objects.filter(recipe__id=pk)
-    if detail.votes.filter(pk=request.user.id).exists():
-        is_voted = True
-    #return redirect('detail', pk=request.pk)
-    return render(request, 'recipe/detail.html', {'detail':detail, 'ingredient_list': ingredient_list, 'is_voted': is_voted,} )
-
+    is_liked = False
+    if detail.likes.filter(pk=request.user.id).exists():
+        is_liked = True
+    if is_liked == False:
+        detail.likes.add(request.user)
+        detail.save()
+    else:
+        detail.likes.remove(request.user)
+        detail.save()
+    return redirect('detail', pk=pk)
 
 def recipe_list(request):
     recipes = Recipe.objects.all().order_by('-creation_time')
-    #object_list = Recipe.objects.all()
     paginator = Paginator(recipes, 2)  # 2 posts in each page
     page = request.GET.get('page')
     try:
         list = paginator.page(page)
     except PageNotAnInteger:
-            # If page is not an integer deliver the first page
         list = paginator.page(1)
     except EmptyPage:
-        # If page is out of range deliver last page of results
         list = paginator.page(paginator.num_pages)
     return render(request, 'recipe/recipe_list.html', {'recipes':recipes,'list': list})
 
@@ -63,18 +62,22 @@ def recipe_list(request):
 def detail(request, pk):
     detail = get_object_or_404(Recipe, pk=pk)
     ingredient_list = Ingredient.objects.filter(recipe__id=pk)
-    is_liked = False
     is_voted = False
-    if detail.likes.filter(pk=request.user.id).exists():
-        is_liked = True
-    if detail.votes.filter(pk=request.user.id).exists():
+    chosen = 0
+    if detail.votes.filter(user__pk=request.user.id).exists():
         is_voted = True
+        ch = detail.votes.filter(user__pk=request.user.id)
+        chosen= ch[0].rating
     context = {
         'detail': detail,
         'ingredient_list': ingredient_list,
-        'is_liked': is_liked,
         'is_voted': is_voted,
+        'chosen':chosen,
     }
+    print(detail.author)
+    print(detail.difficulty)
+    print(detail.ingredients)
+    print(ingredient_list)
     return render(request, 'recipe/detail.html', context)
 
 @login_required

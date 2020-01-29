@@ -25,14 +25,8 @@ class Recipe(models.Model):
     def total_likes(self):
         return self.likes.count()
 
-    '''def is_liked(self, request):
-        return self.likes.filter(id=request.user.id).exists()'''
-
     def total_votes(self):
         return self.votes.count()
-
-    '''def is_voted(self, request):
-        return self.votes.filter(id=request.user.id).exists()'''
 
     def average(self):
         return self.votes.all().aggregate(Avg('rating'))['rating__avg']

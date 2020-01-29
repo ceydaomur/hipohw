@@ -26,11 +26,12 @@
 
 
 <div class="like-content">
-    {% if is_liked == False and user.is_authenticated %}
+    {% if user.is_authenticated %}
         <form action='like/'>
         <input type="submit" value="Like ({{detail.total_likes}})" style="background-color:green; border-color:black; color:white">
         </form>
     {%else%}
+        <form action='like/'>
         <input type="submit" value="Like ({{detail.total_likes}})" style="background-color:blue; border-color:black; color:white">
         </form>
     {%endif%}
@@ -38,8 +39,8 @@
 
 <div>
     <h3>Ingredients </h3>
-    {% for ingredient_list in ingredient_list %}
-        <p> ● {{ ingredient_list.name}}</p>
+    {% for ingredient in ingredient_list %}
+        <p> ● {{ ingredient.name}}</p>
     {% endfor %}
     <h3>Description </h3>
     <p>{{ detail.description}}</p>
@@ -59,8 +60,9 @@
         </select>
         <input type="submit" value="Rate" />
         </form>
-    {%else%}
-        <p style="color:red"> You chosed {{choice}} </p>
+    {% elif is_voted and user.is_authenticated %}
+        <p style="color:red"> You chosed {{chosen}} </p>
+    {% elif user.is_authenticated == False %}
+        <p style="color:red"> You should sign in for voting </p>
     {%endif%}
 </div>
-<p>{{is_liked}} {{is_voted}} {{user.is_authenticated}} </p>

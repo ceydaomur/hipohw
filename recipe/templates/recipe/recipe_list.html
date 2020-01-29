@@ -23,7 +23,14 @@
     <div style="width: 700px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ recipe.description}}</div>
     <div>
         <p> {{ recipe.creation_time}} ·
-        {{recipe.average}}/5 ({{recipe.total_votes}} Votes) ·
+        {% if recipe.total_votes == 0 %}
+            No vote ·
+        {% elif recipe.total_likes == 1 %}
+            {{recipe.average}}/5 ({{recipe.total_votes}} Vote) · 
+        {% else %}
+            {{recipe.average}}/5 ({{recipe.total_votes}} Votes) ·
+        {% endif %}
+
         {% if recipe.total_likes == 0 %}
             No like ·
         {% elif recipe.total_likes == 1 %}

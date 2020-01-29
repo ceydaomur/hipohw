@@ -5,4 +5,5 @@
         {{ form.as_p }}
         <button type="submit" class="save btn btn-default">Share</button>
     </form>
+    <a href="{% url 'recipe_list' %}"><input type="submit" value="Cancel" /></a>
 {% endblock %}

@@ -4,7 +4,8 @@
 
 <div style="background-color:yellow; border-color:yellow; color:purple">
     <h3>
-    <a href="{% url 'recipe_list' %}"><left>Recipe.com<left></a> &nbsp;&nbsp;&nbsp;&nbsp; <a href="{% url 'recipe_new' %}"> Share a Recipe </a>
+    <a href="{% url 'recipe_list' %}"><left>Recipe.com<left></a> &nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="{% url 'recipe_new' %}"> Share a Recipe </a>
     {% if user.is_authenticated == False %}
       <a href="{% url 'login' %}" class="top-menu" style= "float: right;" >Log in</a>
     {%else%}
@@ -13,20 +14,26 @@
     <a href="{% url 'signup' %}" class="top-menu" style= "float: right;" > Sign up </a>
     </h3>
 </div>
+
+<div style ="width:250px; padding-left: 25px; border:1px solid #a1a1a1; border-radius: 25px; float:right;">
+    <h2> Top Used Ingredients </h2>
+    {% for frequent in frequent_list %}
+        <br> <a href="{% url 'ingredient_detail' pk=frequent.pk %}" class="top-menu" > ● {{ frequent.name}} ({{frequent.recipes.count}}) </a></br>
+    {% endfor %}
+</div>
+
 {% for recipe in list %}
-    <div>
+    <div style ="width:550px; padding-left: 10px; margin-bottom: 10px; border:1px solid #a1a1a1; border-radius: 25px; ">
         <h2><a href="{% url 'detail' pk=recipe.pk %}">{{ recipe.recipe_name }}</a></h2>
         {%if recipe.image%}
             <img src='{{ recipe.image.url}}'width="200" height="200" >
         {%endif%}
-    </div>
-    <div style="width: 700px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ recipe.description}}</div>
-    <div>
+        <p style="width: 500px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ recipe.description}}</p>
         <p> {{ recipe.creation_time}} ·
         {% if recipe.total_votes == 0 %}
             No vote ·
         {% elif recipe.total_likes == 1 %}
-            {{recipe.average}}/5 ({{recipe.total_votes}} Vote) · 
+            {{recipe.average}}/5 ({{recipe.total_votes}} Vote) ·
         {% else %}
             {{recipe.average}}/5 ({{recipe.total_votes}} Votes) ·
         {% endif %}
@@ -38,7 +45,14 @@
         {% else %}
             {{recipe.total_likes}} likes ·
         {% endif %}
-        by {{recipe.author}}  </p>
+        by {{recipe.author}}
+        {% if user.is_authenticated and recipe.author.username == username %}
+            <a href="{% url 'recipe_edit' pk=recipe.pk %}"> Edit </a>
+        {% endif %}
+        {% if user.is_authenticated and recipe.author.username == username %}
+            <a href="{% url 'recipe_delete' pk=recipe.pk %}"> Delete </a>
+        {% endif %}
+        </p>
     </div>
 {% endfor %}
 

@@ -2,13 +2,21 @@ from django.shortcuts import render, redirect
 from .models import Recipe, Ingredient, Vote
 from django.utils import timezone
 from django.shortcuts import get_object_or_404, render
+from django.views.generic import CreateView
 from .forms import RecipeForm
+from django.db.models import Count
 from django.contrib.auth.decorators import login_required
 from .models import Recipe
 from django.http import JsonResponse
 from django.http import HttpResponseRedirect
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse_lazy
+from django.views.generic.edit import FormView
+from django.views.generic import UpdateView
+from django.contrib.auth.models import User
+from django.views.generic.edit import DeleteView
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 def signup_view(request):
@@ -48,7 +56,11 @@ def like_recipe(request, pk):
 
 def recipe_list(request):
     recipes = Recipe.objects.all().order_by('-creation_time')
-    paginator = Paginator(recipes, 2)  # 2 posts in each page
+    frequent_list = Ingredient.objects.all().annotate(num = Count('recipes')).order_by('-num')[:5]
+    username = None
+    if request.user.is_authenticated:
+       username = request.user.username
+    paginator = Paginator(recipes, 2)
     page = request.GET.get('page')
     try:
         list = paginator.page(page)
@@ -56,12 +68,20 @@ def recipe_list(request):
         list = paginator.page(1)
     except EmptyPage:
         list = paginator.page(paginator.num_pages)
-    return render(request, 'recipe/recipe_list.html', {'recipes':recipes,'list': list})
+    return render(request, 'recipe/recipe_list.html', {'recipes':recipes,'list': list, 'username':username, 'frequent_list': frequent_list})
 
+def ingredient_detail(request,pk):
+    ingredient = get_object_or_404(Ingredient, pk=pk)
+    recipe_list = ingredient.recipes.all()
+    context = {
+        'recipe_list': recipe_list,
+        'ingredient': ingredient,
+    }
+    return render(request, 'recipe/ingredient_detail.html', context)
 
 def detail(request, pk):
     detail = get_object_or_404(Recipe, pk=pk)
-    ingredient_list = Ingredient.objects.filter(recipe__id=pk)
+    ingredient_list = Ingredient.objects.filter(recipes__id=pk)
     is_voted = False
     chosen = 0
     if detail.votes.filter(user__pk=request.user.id).exists():
@@ -74,22 +94,31 @@ def detail(request, pk):
         'is_voted': is_voted,
         'chosen':chosen,
     }
-    print(detail.author)
-    print(detail.difficulty)
-    print(detail.ingredients)
-    print(ingredient_list)
     return render(request, 'recipe/detail.html', context)
 
-@login_required
-def recipe_new(request):
-    if request.method == "POST":
-        form = RecipeForm(request.POST)
-        if form.is_valid():
-            recipe = form.save(commit=False)
-            recipe.author = request.user
-            recipe.creation_time = timezone.now()
-            recipe.save()
-            return redirect('detail', pk=recipe.pk)
-    else:
-        form = RecipeForm()
-    return render(request, 'recipe/recipe_edit.html', {'form': form})
+class LoginRequiredMixin(object):
+    @classmethod
+    def as_view(cls):
+        return login_required(super(LoginRequiredMixin, cls).as_view())
+
+class CreateRecipeView(LoginRequiredMixin,CreateView):
+    model = Recipe
+    form_class = RecipeForm
+    template_name = 'recipe/recipe_edit.html'
+
+    def form_valid(self, form):
+        author = self.request.user
+        form.instance.author = author
+        return super(CreateRecipeView, self).form_valid(form)
+
+class EditRecipeView(UpdateView):
+    model = Recipe
+    form_class = RecipeForm
+    template_name = 'recipe/recipe_edit.html'
+
+    def form_valid(self, form):
+        return super(EditRecipeView, self).form_valid(form)
+
+class DeleteRecipeView(DeleteView):
+    model = Recipe
+    success_url = reverse_lazy('recipe_list')

@@ -4,6 +4,7 @@ from django.utils import timezone
 from multiselectfield import MultiSelectField
 from django.contrib.auth.models import User
 from django.db.models import Avg
+from django.urls import reverse
 
 class Ingredient(models.Model):
     name = models.CharField(max_length=150)
@@ -13,7 +14,6 @@ class Ingredient(models.Model):
 
     class Meta:
         ordering = ["name"]
-
 
 class Recipe(models.Model):
     author = models.ForeignKey('auth.User', on_delete=models.CASCADE)
@@ -31,6 +31,9 @@ class Recipe(models.Model):
     def average(self):
         return self.votes.all().aggregate(Avg('rating'))['rating__avg']
 
+    def get_absolute_url(self):
+        return reverse('detail', kwargs={'pk': self.pk})
+
     DIFFICULTY_CHOICES = [
         ('Easy', 'Easy'),
         ('Medium','More Effort'),
@@ -40,7 +43,7 @@ class Recipe(models.Model):
         max_length=20,
         choices=DIFFICULTY_CHOICES,
     )
-    ingredients = models.ManyToManyField('Ingredient')
+    ingredients = models.ManyToManyField('Ingredient',related_name = 'recipes')
     creation_time= models.DateTimeField(default=timezone.now)
 
     def __str__(self):

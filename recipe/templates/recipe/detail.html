@@ -2,7 +2,7 @@
     <h1>Recipe Detail</h1>
 </div>
 
-<div style="background-color:yellow; border-color:yellow; color:purple">
+<div style="background-color:yellow; padding-left: 15px;  border-color:yellow; color:purple">
     <h3>
     <a href="{% url 'recipe_list' %}"><left>Recipe.com<left></a>  <a href="{% url 'recipe_new' %}"> Share a Recipe </a>
     {% if user.is_authenticated == False %}
@@ -15,29 +15,29 @@
     </h3>
 </div>
 
-<div>
+<div style ="padding-left: 15px;">
     <h2>{{ detail.recipe_name }}</h2>
     <p> 🔪{{detail.author}}💪{{ detail.difficulty}} ⏰{{detail.creation_time}}</p>
     <p>
-    {%if detail.image%}
+    {%if detail.image %}
         <img src='{{ detail.image.url }}'width="200" height="200" >
     {%endif%}
     </p>
 
 
-<div class="like-content">
+<div class="like-content" style ="padding-left: 15px;">
     {% if user.is_authenticated %}
         <form action='like/'>
-        <input type="submit" value="Like ({{detail.total_likes}})" style="background-color:green; border-color:black; color:white">
+        <input type="submit" value="Like ({{detail.total_likes}})" style="background-color:#0059b3; border-color:black; color:white">
         </form>
     {%else%}
         <form action='like/'>
-        <input type="submit" value="Like ({{detail.total_likes}})" style="background-color:blue; border-color:black; color:white">
+        <input type="submit" value="Like ({{detail.total_likes}})" style="background-color:green; border-color:black; color:white">
         </form>
     {%endif%}
 </div>
 
-<div>
+<div style ="padding-left: 15px;">
     <h3>Ingredients </h3>
     {% for ingredient in ingredient_list %}
         <p> ● {{ ingredient.name}}</p>
@@ -46,7 +46,7 @@
     <p>{{ detail.description}}</p>
 </div>
 
-<div class="vote-content">
+<div class="vote-content" style ="padding-left: 15px;">
     {% if is_voted == False and user.is_authenticated %}
         <form action="vote/" method="post">
         {% csrf_token %}
@@ -58,7 +58,7 @@
             <option value="4">4</option>
             <option value="5">5</option>
         </select>
-        <input type="submit" value="Rate" />
+        <input type="submit" value="Rate" style= "background-color: #0059b3; color: white;"/>
         </form>
     {% elif is_voted and user.is_authenticated %}
         <p style="color:red"> You chosed {{chosen}} </p>

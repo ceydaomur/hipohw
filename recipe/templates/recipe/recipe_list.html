@@ -2,20 +2,20 @@
     <h1>Homepage</h1>
 </div>
 
-<div style="background-color:yellow; border-color:yellow; color:purple">
+<div style="background-color:black; border-color:black; height: 30px; margin-bottom: 10px;">
     <h3>
-    <a href="{% url 'recipe_list' %}"><left>Recipe.com<left></a> &nbsp;&nbsp;&nbsp;&nbsp;
-    <a href="{% url 'recipe_new' %}"> Share a Recipe </a>
+    <a href="{% url 'recipe_list' %}"><input type="submit" value="Recipe.com" style= "background-color: black; border-color:black; color: white;"/></a> &nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="{% url 'recipe_new' %}"><input type="submit" value="Share a Recipe" style= "background-color: black; border-color:black;color: white;" /></a>
     {% if user.is_authenticated == False %}
-      <a href="{% url 'login' %}" class="top-menu" style= "float: right;" >Log in</a>
+      <a href="{% url 'login' %}" class="top-menu" style= "float: right;" ><input type="submit" value="Log In" style= "background-color: black; border-color:black; color: white;"/></a>
     {%else%}
-        <a href="{% url 'logout' %}" class="top-menu" style= "float: right;">  ({{user}}) Log out</a>
+        <a href="{% url 'logout' %}" class="top-menu" style= "float: right;"><input type="submit" value="({{user}}) Log out" style= "background-color: black; border-color:black; color: white;" /></a>
     {% endif %}
-    <a href="{% url 'signup' %}" class="top-menu" style= "float: right;" > Sign up </a>
+    <a href="{% url 'signup' %}" class="top-menu" style= "float: right;" ><input type="submit" value="Sign Up" style= "background-color: black; border-color:black; color: white;" /></a>
     </h3>
 </div>
 
-<div style ="width:250px; padding-left: 25px; border:1px solid #a1a1a1; border-radius: 25px; float:right;">
+<div style ="width:250px; padding-left: 25px; padding-bottom: 25px; border:1px solid #a1a1a1; border-radius: 25px; float:right;">
     <h2> Top Used Ingredients </h2>
     {% for frequent in frequent_list %}
         <br> <a href="{% url 'ingredient_detail' pk=frequent.pk %}" class="top-menu" > ● {{ frequent.name}} ({{frequent.recipes.count}}) </a></br>
@@ -28,8 +28,8 @@
         {%if recipe.image%}
             <img src='{{ recipe.image.url}}'width="200" height="200" >
         {%endif%}
-        <p style="width: 500px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ recipe.description}}</p>
-        <p> {{ recipe.creation_time}} ·
+        <p style="width: 500px; height: 40;  text-overflow: ellipsis; overflow: hidden;">{{ recipe.description}} </p>
+        <p> {{ recipe.creation_time.day}}/{{ recipe.creation_time.month}}/{{ recipe.creation_time.year}} ·
         {% if recipe.total_votes == 0 %}
             No vote ·
         {% elif recipe.total_likes == 1 %}

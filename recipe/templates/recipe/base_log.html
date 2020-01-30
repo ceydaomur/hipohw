@@ -18,15 +18,17 @@
         {% endif %}
         <h1>LOGIN</h1>
     </div>
-    <div style="background-color:yellow; border-color:yellow; color:purple">
-        <h5>
-        <a href="{% url 'recipe_list' %}"><left>Recipe.com<left></a>  <a href="{% url 'recipe_new' %}"> Share a Recipe</a>
-          {% if user.is_authenticated == False %}
-            <a href="{% url 'login' %}" class="top-menu" style= "float: right;"> Log in </a>
-          {%else%}
-              <a href="{% url 'logout' %}" class="top-menu" style= "float: right;">({{user}}) Log out</a>
-          {% endif %}
-        </h5>
+    <div style="background-color:black; border-color:black; height: 30px; margin-bottom: 10px;">
+        <h4>
+        <a href="{% url 'recipe_list' %}"><input type="submit" value="Recipe.com" style= "background-color: black; border-color:black; color: white; height: 30px"/></a> &nbsp;&nbsp;&nbsp;&nbsp;
+        <a href="{% url 'recipe_new' %}"><input type="submit" value="Share a Recipe" style= "background-color: black; border-color:black;color: white; height: 30px" /></a>
+        {% if user.is_authenticated == False %}
+          <a href="{% url 'login' %}" class="top-menu" style= "float: right;" ><input type="submit" value="Log In" style= "background-color: black; border-color:black; color: white; height: 30px"/></a>
+        {%else%}
+            <a href="{% url 'logout' %}" class="top-menu" style= "float: right;"><input type="submit" value="({{user}}) Log out" style= "background-color: black; border-color:black; color: white; height: 30px" /></a>
+        {% endif %}
+        <a href="{% url 'signup' %}" class="top-menu" style= "float: right;" ><input type="submit" value="Sign Up" style= "background-color: black; border-color:black; color: white; height: 30px" /></a>
+        </h4>
     </div>
     <div class="content container">
         <div class="row">

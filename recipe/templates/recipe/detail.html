@@ -2,22 +2,21 @@
     <h1>Recipe Detail</h1>
 </div>
 
-<div style="background-color:yellow; padding-left: 15px;  border-color:yellow; color:purple">
+<div style="background-color:black; border-color:black; height: 30px; margin-bottom: 10px;">
     <h3>
-    <a href="{% url 'recipe_list' %}"><left>Recipe.com<left></a>  <a href="{% url 'recipe_new' %}"> Share a Recipe </a>
+    <a href="{% url 'recipe_list' %}"><input type="submit" value="Recipe.com" style= "background-color: black; border-color:black; color: white;"/></a> &nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="{% url 'recipe_new' %}"><input type="submit" value="Share a Recipe" style= "background-color: black; border-color:black;color: white;" /></a>
     {% if user.is_authenticated == False %}
-        <a href="{% url 'login' %}" class="top-menu" style= "float: right;">Log in</a>
+      <a href="{% url 'login' %}" class="top-menu" style= "float: right;" ><input type="submit" value="Log In" style= "background-color: black; border-color:black; color: white;"/></a>
     {%else%}
-        <a href="{% url 'logout' %}" class="top-menu" style= "float: right;">({{user}}) Log out</a>
+        <a href="{% url 'logout' %}" class="top-menu" style= "float: right;"><input type="submit" value="({{user}}) Log out" style= "background-color: black; border-color:black; color: white;" /></a>
     {% endif %}
-    <a href="{% url 'signup' %}" class="top-menu" style= "float: right;"> Sign up</a>
-
+    <a href="{% url 'signup' %}" class="top-menu" style= "float: right;" ><input type="submit" value="Sign Up" style= "background-color: black; border-color:black; color: white;" /></a>
     </h3>
 </div>
-
 <div style ="padding-left: 15px;">
     <h2>{{ detail.recipe_name }}</h2>
-    <p> 🔪{{detail.author}}💪{{ detail.difficulty}} ⏰{{detail.creation_time}}</p>
+    <p> 🔪{{detail.author}}  &nbsp;&nbsp;&nbsp; 💪{{ detail.difficulty}}  &nbsp;&nbsp;&nbsp; ⏰{{ detail.creation_time.day}}/{{ detail.creation_time.month}}/{{ detail.creation_time.year}}</p>
     <p>
     {%if detail.image %}
         <img src='{{ detail.image.url }}'width="200" height="200" >

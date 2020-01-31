@@ -1,5 +1,6 @@
+
 <div align="center">
-    <h1>Ingredient Detail</h1>
+    <h1>Search Results</h1>
 </div>
 
 <div style="background-color:black; border-color:black; height: 30px; margin-bottom: 10px;">
@@ -15,9 +16,8 @@
     </h3>
 </div>
 
-<h2 style="text-align:"> Recipes which include "{{ingredient}}" : </h2>
 <div style ="padding-left: 70px; ">
-    {% for recipe in list %}
+    {% for recipe in object_list %}
     <div style ="width:800px;  text-overflow: ellipsis; padding-left: 10px; margin-bottom: 10px; border:1px solid #a1a1a1; border-radius: 25px; ">
         <h2 style="text-align: center;"><a href="{% url 'detail' pk=recipe.pk %}" >{{ recipe.recipe_name }}</a></h2>
         {%if recipe.image%}
@@ -50,37 +50,4 @@
         </p>
     </div>
     {% endfor %}
-</div>
-
-{% if list.has_previous and list.has_next %}
-    <div class="pagination"  style= " margin-left: 400px;">
-        <span class="step-links">
-            {% if list.has_previous %}
-                <a href="?page={{ list.previous_page_number }}"><input type="submit" value="Previous Page" /></a>
-            {% endif %}
-            {% if list.has_next %}
-                <a href="?page={{ list.next_page_number }}"><input type="submit" value="Next Page" /></a>
-            {% endif %}
-        </span>
-    </div>
-{%else%}
-    <div class="pagination"  style= " margin-left: 400px;">
-        <span class="step-links">
-            {% if list.has_previous %}
-                <a href="?page={{ list.previous_page_number }}"><input type="submit" value="Previous Page" /></a>
-            {% endif %}
-            {% if list.has_next %}
-                <a href="?page={{ list.next_page_number }}"><input type="submit" value="Next Page" /></a>
-            {% endif %}
-        </span>
-    </div>
-{% endif %}
-<div  style= " margin-left: 390px;">
-    {%if recipe_list.count == 1 %}
-        <p>Total {{recipe_list.count}} recipe</p>
-    {%elif recipe_list.count == 0 %}
-        <p> No recipe</p>
-    {%else%}
-        <p>Total {{recipe_list.count}} recipes</p>
-    {% endif %}
 </div>

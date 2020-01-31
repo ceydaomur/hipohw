@@ -8,13 +8,14 @@ from django.db.models import Count
 from django.contrib.auth.decorators import login_required
 from .models import Recipe
 from django.http import JsonResponse
+from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
-from django.views.generic import UpdateView
+from django.views.generic import UpdateView, ListView
 from django.contrib.auth.models import User
 from django.views.generic.edit import DeleteView
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
@@ -35,10 +36,6 @@ def vote_recipe(request, pk):
     #is_voted = False
     choice = request.POST.get('recipe')
     Vote.objects.create(recipe=detail, user=request.user, rating=choice)
-    '''if detail.votes.filter(pk=request.user.id).exists():
-        is_voted = True
-    if is_voted == True:
-        print("You chosed", choice )'''
     return redirect('detail', pk=pk)
 
 def like_recipe(request, pk):
@@ -57,6 +54,7 @@ def like_recipe(request, pk):
 def recipe_list(request):
     recipes = Recipe.objects.all().order_by('-creation_time')
     frequent_list = Ingredient.objects.all().annotate(num = Count('recipes')).order_by('-num')[:5]
+    print(frequent_list)
     username = None
     if request.user.is_authenticated:
        username = request.user.username
@@ -73,9 +71,18 @@ def recipe_list(request):
 def ingredient_detail(request,pk):
     ingredient = get_object_or_404(Ingredient, pk=pk)
     recipe_list = ingredient.recipes.all()
+    paginator = Paginator(recipe_list, 2)
+    page = request.GET.get('page')
+    try:
+        list = paginator.page(page)
+    except PageNotAnInteger:
+        list = paginator.page(1)
+    except EmptyPage:
+        list = paginator.page(paginator.num_pages)
     context = {
         'recipe_list': recipe_list,
         'ingredient': ingredient,
+        'list':list,
     }
     return render(request, 'recipe/ingredient_detail.html', context)
 
@@ -122,3 +129,24 @@ class EditRecipeView(UpdateView):
 class DeleteRecipeView(DeleteView):
     model = Recipe
     success_url = reverse_lazy('recipe_list')
+
+class SearchResultsView(ListView):
+    model = Recipe
+    #paginate_by = 2
+    template_name = 'recipe/search_results.html'
+
+    def get_queryset(self): # new
+        query = self.request.GET.get('q')
+        #check = "," in query
+
+        query_list = query.split(",")
+        q_object = Q(recipe_name__icontains=query_list[0]) | Q(description__icontains=query_list[0])| Q(ingredients__name__icontains=query_list[0])
+        for item in query_list:
+            q_object.add( (Q(recipe_name__icontains=item) | Q(description__icontains=item)| Q(ingredients__name__icontains=item)), q_object.connector)
+        first_list = Recipe.objects.filter(q_object)
+        #else:
+            #first_list = Recipe.objects.filter(Q(recipe_name__icontains=query) | Q(description__icontains=query) | Q(ingredients__name__icontains=query))
+        #first_list = Recipe.objects.filter((recipe_name__in=query_list)| (description__in= query_set)|(ingredients__name__in= query_set))
+        count = first_list.count()
+        object_list = first_list.annotate(num = Count('recipe_name')).order_by('-num')[:count]
+        return object_list

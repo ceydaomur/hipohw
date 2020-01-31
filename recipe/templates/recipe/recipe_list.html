@@ -15,7 +15,18 @@
     </h3>
 </div>
 
-<div style ="width:250px; padding-left: 25px; padding-bottom: 25px; border:1px solid #a1a1a1; border-radius: 25px; float:right;">
+
+<div style ="width:250px; position:absolute; left: 600px; top: 120px; padding-left: 25px; padding-bottom: 5px; padding-right: 15px; border:1px solid #a1a1a1; border-radius: 25px;">
+    <h2> Search </h2>
+    <p style="font-size: 12px;">(You can search more than one ingredients with comma between items ex:butter,egg...)</p>
+    <form action="{% url 'search_results' %}" method="get">
+        <input name="q" type="text" placeholder="ingredient,dish,keyword...">
+        <input type="submit" value="Submit" style= "background-color: white; color: black;"/>
+    </form>
+</div>
+
+
+<div style ="width:250px;  position:absolute; left: 600px; top: 280px; padding-left: 25px; padding-bottom: 25px; padding-right: 15px;  border:1px solid #a1a1a1; border-radius: 25px; ">
     <h2> Top Used Ingredients </h2>
     {% for frequent in frequent_list %}
         <br> <a href="{% url 'ingredient_detail' pk=frequent.pk %}" class="top-menu" > ● {{ frequent.name}} ({{frequent.recipes.count}}) </a></br>
@@ -23,12 +34,12 @@
 </div>
 
 {% for recipe in list %}
-    <div style ="width:550px; padding-left: 10px; margin-bottom: 10px; border:1px solid #a1a1a1; border-radius: 25px; ">
+    <div style ="width:500px;  text-overflow: ellipsis; padding-left: 10px; margin-bottom: 10px; border:1px solid #a1a1a1; border-radius: 25px; ">
         <h2><a href="{% url 'detail' pk=recipe.pk %}">{{ recipe.recipe_name }}</a></h2>
         {%if recipe.image%}
             <img src='{{ recipe.image.url}}'width="200" height="200" >
         {%endif%}
-        <p style="width: 500px; height: 40;  text-overflow: ellipsis; overflow: hidden;">{{ recipe.description}} </p>
+        <p style="width: 500px; height: 39;  text-overflow: ellipsis; overflow: hidden;">{{ recipe.description}} </p>
         <p> {{ recipe.creation_time.day}}/{{ recipe.creation_time.month}}/{{ recipe.creation_time.year}} ·
         {% if recipe.total_votes == 0 %}
             No vote ·
@@ -56,16 +67,30 @@
     </div>
 {% endfor %}
 
-
-<div class="pagination" align = "center">
-    <span class="step-links">
-        {% if list.has_previous %}
-            <a href="?page={{ list.previous_page_number }}"><input type="submit" value="Previous Page" /></a>
-        {% endif %}
-        {% if list.has_next %}
-            <a href="?page={{ list.next_page_number }}"><input type="submit" value="Next Page" /></a>
-        {% endif %}
-    </span>
+{% if list.has_previous and list.has_next %}
+    <div class="pagination"  style= " margin-left: 150px;">
+        <span class="step-links">
+            {% if list.has_previous %}
+                <a href="?page={{ list.previous_page_number }}"><input type="submit" value="Previous Page" /></a>
+            {% endif %}
+            {% if list.has_next %}
+                <a href="?page={{ list.next_page_number }}"><input type="submit" value="Next Page" /></a>
+            {% endif %}
+        </span>
+    </div>
+{%else%}
+    <div class="pagination"  style= " margin-left: 200px;">
+        <span class="step-links">
+            {% if list.has_previous %}
+                <a href="?page={{ list.previous_page_number }}"><input type="submit" value="Previous Page" /></a>
+            {% endif %}
+            {% if list.has_next %}
+                <a href="?page={{ list.next_page_number }}"><input type="submit" value="Next Page" /></a>
+            {% endif %}
+        </span>
+    </div>
+{% endif %}
+<div  style= " margin-left: 195px;">
     {%if recipes.count == 1 %}
         <p>Total {{recipes.count}} recipe</p>
     {%elif recipes.count == 0 %}
